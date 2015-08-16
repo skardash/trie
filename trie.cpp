@@ -121,4 +121,5 @@ int main() {
 
 	tr->print_all("");	
 //	tr->print_special();
+//	cout << tr->recognize("jimbo") << endl;
 }
