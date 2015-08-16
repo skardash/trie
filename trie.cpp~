@@ -1,0 +1,108 @@
+#include <iostream>
+#include <algorithm>
+#include <iterator>
+#include <vector> 
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <termios.h>
+#include <sys/ioctl.h>
+
+#include <string>
+#include <unordered_map>
+#include <fstream>
+
+using namespace std;
+
+class trie {
+public:	
+	unordered_map<char, trie *> um;
+	
+	trie() {
+		// init trie with list of string
+		um = {};
+	}
+	
+	void add_string(string str) {
+		// add string to a trie
+		trie *tr = this;
+		cout << "starting adding: " << endl;
+		for (int i = 0; i < str.size(); i++) {
+		//	either str[i] is already in the path or add it
+			if ((tr->um).find(str[i]) == tr->um.end()) {
+				tr->um.insert (make_pair<char,trie *>((char)str[i], new trie())); // move insertion
+				tr->um.at(str[i]) = new trie();
+				cout << "char " << str[i] << " is added" << endl;
+			}
+			tr = tr->um.at(str[i]);
+		}
+	}
+
+	bool recognize(string str) {
+		trie *tr = this;
+		for (int i = 0; i < str.size(); i++) {
+			// either str[i] is already in the path or add it
+			if (tr->um.find(str[i]) == tr->um.end()) 
+				return false;
+			tr = tr->um.at(str[i]);
+		}
+		return true;
+	}
+	
+	void print() {
+		trie *tr = this;
+		for(unordered_map<char,trie *>::iterator iter = um.begin(); iter != um.end(); ++iter) {
+			cout << iter->first << " ";
+		}
+		cout << endl;
+		for(unordered_map<char,trie *>::iterator iter = um.begin(); iter != um.end(); ++iter) {
+			iter->second->print();
+		}
+	}
+	
+	void print_special() {
+		trie *tr = this;
+		int level = 0;
+		while(print_level(level)>0) {
+			cout << endl;
+			level++;
+		}
+	}
+
+	int print_level(int i) {
+		trie *tr = this;
+		int cnt = 0;
+		if (i==0) {
+			for(unordered_map<char,trie *>::iterator iter = um.begin(); iter != um.end(); ++iter) {
+				cout << iter->first << " "; 
+				cnt++;
+			}
+		}
+		for(unordered_map<char,trie *>::iterator iter = um.begin(); iter != um.end(); ++iter) {
+			cnt += iter->second->print_level(i-1);
+		}
+		return cnt;
+	}
+
+	void print_longest() {
+		
+	}
+	
+	void from_file(string filename)	 {
+		std::ifstream infile(filename);
+		string str;
+		while (infile >> str) {
+	    		add_string(str);
+		}
+	}
+};
+
+int main() {
+	trie *tr = new trie();
+	tr->from_file("names.txt");
+	tr->print_special();
+	cout << tr->recognize("silvester") << endl;
+	cout << tr->recognize("asshole") << endl;
+	tr->print();
+}
