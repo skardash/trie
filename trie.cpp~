@@ -90,12 +90,21 @@ public:
 		if (this->um.size() == 0)
 			cout << str << endl;
 	}
+
+	void print_to_file(string str) {
+		ofstream fout("out.txt", ios_base::app);
+		for(unordered_map<char,trie *>::iterator iter = um.begin(); iter != um.end(); ++iter) {
+			iter->second->print_to_file(str + iter->first);
+		}	
+		if (this->um.size() == 0)
+			fout << str << endl;
+	}
 	
 	void from_file(string filename)	 {
 		std::ifstream infile(filename);
 		string str;
 		while (infile >> str) {
-			cout << str << endl;
+		//	cout << str << endl;
 	    		add_string(str);
 		}
 	}
@@ -118,8 +127,11 @@ int main() {
 	tr->add_string("soska");
 	tr->add_string("solo");
 */
-
+	
+	tr->print_special();	
 	tr->print_all("");	
+	tr->print_to_file("");
+	
 //	tr->print_special();
-	cout << tr->recognize("jimbo") << endl;
+//	cout << tr->recognize("jimbo") << endl;
 }
