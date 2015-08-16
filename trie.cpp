@@ -27,13 +27,11 @@ public:
 	void add_string(string str) {
 		// add string to a trie
 		trie *tr = this;
-		cout << "starting adding: " << endl;
 		for (int i = 0; i < str.size(); i++) {
 		//	either str[i] is already in the path or add it
 			if ((tr->um).find(str[i]) == tr->um.end()) {
 				tr->um.insert (make_pair<char,trie *>((char)str[i], new trie())); // move insertion
 				tr->um.at(str[i]) = new trie();
-				cout << "char " << str[i] << " is added" << endl;
 			}
 			tr = tr->um.at(str[i]);
 		}
@@ -85,24 +83,42 @@ public:
 		return cnt;
 	}
 
-	void print_longest() {
-		
+	void print_all(string str) {
+		for(unordered_map<char,trie *>::iterator iter = um.begin(); iter != um.end(); ++iter) {
+			iter->second->print_all(str + iter->first);
+		}	
+		if (this->um.size() == 0)
+			cout << str << endl;
 	}
 	
 	void from_file(string filename)	 {
 		std::ifstream infile(filename);
 		string str;
 		while (infile >> str) {
+			cout << str << endl;
 	    		add_string(str);
 		}
 	}
+
 };
 
 int main() {
 	trie *tr = new trie();
 	tr->from_file("names.txt");
-	tr->print_special();
-	cout << tr->recognize("silvester") << endl;
-	cout << tr->recognize("asshole") << endl;
-	tr->print();
+//	tr->print_special();
+//	cout << tr->recognize("silvester") << endl;
+//	cout << tr->recognize("asshole") << endl;
+
+/*
+	tr->add_string("kozel");
+	tr->add_string("kozlina");
+	tr->add_string("kozyavka");
+	tr->add_string("suka");
+	tr->add_string("suka");
+	tr->add_string("soska");
+	tr->add_string("solo");
+*/
+
+	tr->print_all("");	
+//	tr->print_special();
 }
